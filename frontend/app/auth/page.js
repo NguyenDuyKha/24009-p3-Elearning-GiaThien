@@ -1,13 +1,12 @@
 'use client'
 
 import { useState } from 'react'
-import { useRouter, useSearchParams } from 'next/navigation'
+import { useSearchParams } from 'next/navigation'
 import Button from '../../components/Button'
 import Input from '../../components/Input'
 import { apiRequest, saveAuth } from '../../lib/api'
 
 export default function AuthPage() {
-  const router = useRouter()
   const searchParams = useSearchParams()
   const redirect = searchParams.get('redirect')
 
@@ -38,16 +37,16 @@ export default function AuthPage() {
 
   const resolveRedirect = (user) => {
     if (redirect) {
-      router.push(redirect)
+      window.location.href = redirect
       return
     }
 
     if (user.role === 'admin' || user.role === 'instructor') {
-      router.push('/dashboard')
+      window.location.href = '/dashboard'
       return
     }
 
-    router.push('/')
+    window.location.href = '/'
   }
 
   const handleLogin = async (e) => {
