@@ -1,22 +1,22 @@
-'use strict';
+"use strict";
 
-require('dotenv').config();
+require("dotenv").config();
 
-const express = require('express');
-const cors = require('cors');
-const path = require('path');
+const express = require("express");
+const cors = require("cors");
+const path = require("path");
 
-const sequelize = require('./config/config');
+const sequelize = require("./config/config");
 
-const authRoutes = require('./routes/authRoutes');
-const userRoutes = require('./routes/userRoutes');
-const courseRoutes = require('./routes/courseRoutes');
-const orderRoutes = require('./routes/orderRoutes');
-const learningRoutes = require('./routes/learningRoutes');
-const quizRoutes = require('./routes/quizRoutes');
+const authRoutes = require("./routes/authRoutes");
+const userRoutes = require("./routes/userRoutes");
+const courseRoutes = require("./routes/courseRoutes");
+const orderRoutes = require("./routes/orderRoutes");
+const learningRoutes = require("./routes/learningRoutes");
+const quizRoutes = require("./routes/quizRoutes");
 
-const requestLogger = require('./middlewares/requestLogger');
-const errorHandler = require('./middlewares/errorHandler');
+const requestLogger = require("./middlewares/requestLogger");
+const errorHandler = require("./middlewares/errorHandler");
 
 const server = express();
 const PORT = process.env.PORT || 5000;
@@ -25,42 +25,39 @@ server.use(
   cors({
     origin: process.env.FRONTEND_URL || true,
     credentials: true,
-  })
+  }),
 );
 server.use(express.json());
 server.use(express.urlencoded({ extended: true }));
 server.use(requestLogger);
 
+server.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
-server.use('/uploads', express.static(path.join(__dirname, 'uploads')));
-
-server.get('/', (req, res) => {
+server.get("/", (req, res) => {
   return res.json({
     success: true,
-    message: 'Backend E-Learning đang hoạt động',
+    message: "Backend E-Learning đang hoạt động",
   });
 });
 
-server.use('/api/auth', authRoutes);
-server.use('/api/users', userRoutes);
-server.use('/api/courses', courseRoutes);
-server.use('/api/orders', orderRoutes);
-server.use('/api/learning', learningRoutes);
-server.use('/api/quizzes', quizRoutes);
+server.use("/api/auth", authRoutes);
+server.use("/api/users", userRoutes);
+server.use("/api/courses", courseRoutes);
+server.use("/api/orders", orderRoutes);
+server.use("/api/learning", learningRoutes);
+server.use("/api/quizzes", quizRoutes);
 
 server.use(errorHandler);
 
-const startServer = async () => {
-  try {
-    await sequelize.authenticate();
-    console.log('Kết nối database thành công');
+sequelize
+  .authenticate()
+  .then(() => {
+    console.log("Kết nối database thành công");
+  })
+  .catch((err) => {
+    console.error("Không thể kết nối CSDL: " + err);
+  });
 
-    server.listen(PORT, () => {
-      console.log(`Server chạy tại http://localhost:${PORT}`);
-    });
-  } catch (error) {
-    console.error('Không thể khởi động server:', error.message);
-  }
-};
-
-startServer();
+server.listen(PORT, () => {
+  console.log(`Server chạy tại http://localhost:${PORT}`);
+});
